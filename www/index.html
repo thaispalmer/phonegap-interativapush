@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!--
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=medium-dpi" />
+		<script type="text/javascript" src="appframework.min.js"></script>
+		<script type="text/javascript" charset="utf-8" src="ui/appframework.ui.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/af.ui.css" title="default" />
+		<link rel="stylesheet" type="text/css" href="css/icons.css" title="default" />
+        <!-- <link rel="stylesheet" type="text/css" href="css/index.css" /> -->
+        <title>Interativa Push</title>
+    </head>
+    <body>
+		<div id="afui">
+			<div id="header"><h1>Interativa Push</h1></div>
+			<div id="content">
+				<div class="panel" id="identificacao" selected="true">
+					<div class="formGroupHead">Identifique-se</div>
+					<form id="login" onsubmit="return false">
+						<input type="text" name="usuario" placeholder="Seu nome"/>
+						<input type="submit" class="button" value="Enviar" style="float: right" onclick="enviaform()"/>
+					</form>
+					<div id="registrado-chk" style="display: none; text-align:center; clear: both"><h1><span class="icon check" style="color: lightgreen"></span> Registrado</h1></div>
+					
+					<footer>
+						<a class="icon key" href="#identificacao">Identificação</a>
+						<a class="icon info" href="#log">Registro</a>
+					</footer>
+				</div>
+
+				<div class="panel" id="log">
+					<ul id="info-list" style="padding: 2em; list-style: none">
+					</ul>
+					
+					<footer>
+						<a class="icon key" href="#identificacao">Identificação</a>
+						<a class="icon info" href="#log">Registro</a>
+					</footer>
+				</div>
+			</div>
+			
+		</div>
+
+		<!--
+        <div class="app">
+            <h1>PhoneGap</h1>
+            <div id="deviceready" class="blink">
+                <p class="event listening">Connecting to Device</p>
+                <p class="event received">Device is Ready</p>
+            </div>
+        </div>
+		-->
+        <script type="text/javascript" src="phonegap.js"></script>
+		<script type="text/javascript" src="PushNotification.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript">
+            app.initialize();
+			
+			$.ui.ready(function() {
+				$.ui.backButtonText = "Voltar";
+			});
+        /*
+        if (!((window.DocumentTouch && document instanceof DocumentTouch) || "ontouchstart" in window)) {
+            var script = document.createElement("script");
+            script.src = "plugins/af.desktopBrowsers.js" ;
+            var tag = $("head").append(script);
+            $.os.android = true;
+            $.os.desktop = true;
+        }
+		*/
+			
+        </script>
+    </body>
+</html>

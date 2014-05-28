@@ -1,7 +1,7 @@
 <?php
 
 require_once('config.php');
-$db = mysqli_connect($_config['mysql']['host'].":".$_config['mysql']['port'],$_config['mysql']['user'],$_config['mysql']['pass'],$_config['mysql']['database']) or die("Erro: " . mysqli_error($db));
+$db = mysqli_connect($_config['mysql']['host'],$_config['mysql']['user'],$_config['mysql']['pass'],$_config['mysql']['database'],$_config['mysql']['port']) or die("Erro: " . mysqli_error($db));
 
 if ($_GET) {
         if ($_GET['action'] == 'assign') {

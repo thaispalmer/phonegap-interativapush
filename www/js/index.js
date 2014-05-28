@@ -123,7 +123,7 @@ var app = {
 		$('#login .button').removeAttr('disabled');
 		$('#login .button').addClass('green');
 		// enviar para o servidor o token do iOS para uso posterior
-		$("#login input[name='registro']").value = result;
+		$("#login input[name='registro']").val(result);
 		$('<li></li>').html('Registration Token = '+result).appendTo('#info-list');
 	},
 	
@@ -136,7 +136,7 @@ var app = {
 					$('#login .button').removeAttr('disabled');
 					$('#login .button').addClass('green');
 					// Enviar para o servidor o regID do android para uso posterior
-					$("#login input[name='registro']").value = e.regid;
+					$("#login input[name='registro']").val(e.regid);
 					$('<li></li>').html('Registration id = '+e.regid).appendTo('#info-list');
 				}
 			break;

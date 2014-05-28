@@ -17,6 +17,9 @@
  * under the License.
  */
 var app = {
+
+	urlservidor: 'http://www.st0rage.org/~thoso/interativapush/',
+
     // Application Constructor
     initialize: function() {
         this.bindEvents();
@@ -39,6 +42,12 @@ var app = {
 	
 	
     pushInit: function() {
+    	$('#login').submit(function(event) {
+    		app.enviaRegistro();
+    		event.preventDefault();
+    	});
+    	$('#login .button').attr('disabled','disabled');
+
 		$('<li></li>').html('Registrando '+device.platform).appendTo('#info-list');
 		var pushNotification = window.plugins.pushNotification;
 		if ( device.platform == 'android' || device.platform == 'Android'){
@@ -73,10 +82,45 @@ var app = {
 		$('<li></li>').html('Erro = ' + error).appendTo('#info-list');
 	},
 	
+	enviaRegistro: function(data) {
+		$('#login .button').attr('disabled','disabled');
+		$('#registrando-notify').css('display','block');
+		$.getJSON(app.urlservidor+'index.php?action=assign',{ 'nome': $("#login input[name='usuario']").val , 'registro': $("#login input[name='registro']").value , 'plataforma': 'asdasd' },function(data){
+//		$.get(app.urlservidor+'index.php?action=assign&plataforma=' + 'asdasd' + '&' + $('#login').serialize(),function(result) {
+			console.log(result);
+			var data = $.parseJSON(result);
+			if (data.error == 1) {
+				alert('Assign Incompleto, confira as informações e tente novamente.');
+				$('<li></li>').html('Erro: Assign incompleto, informações insuficientes.').appendTo('#info-list');
+				$('#login .button').removeAttr('disabled');
+				$('#registrando-notify').css('display','none');
+			}
+        	else if (data.success) {
+        		if (data.success == 1) {
+					$('<li></li>').html('Registro adicionado!').appendTo('#info-list');
+        		}
+        		else {
+        			$('<li></li>').html('Registro atualizado!').appendTo('#info-list');
+        		}
+        		$('<li></li>').html('Pronto para receber notificações push individualmente.').appendTo('#info-list');
+        		$('#registrando-notify').css('display','none');
+        		$('#registrado-chk').css('display','block');
+        		$('#login').attr('disabled','disabled');
+        	}
+        	else {
+        		alert('Erro desconhecido. Tente novamente.');
+        		$('<li></li>').html('Erro desconhecido').appendTo('#info-list');
+        		$('#login .button').removeAttr('disabled');
+        		$('#registrando-notify').css('display','none');
+        	}
+    	});
+	},
+
 	tokenHandler: function(result) {
+		$('#login .button').removeAttr('disabled');
 		// enviar para o servidor o token do iOS para uso posterior
+		$("#login input[name='registro']").value = result;
 		$('<li></li>').html('Registration Token = '+result).appendTo('#info-list');
-		$('#registrado-chk').css('display','block');
 	},
 	
 	onNotificationGCM: function(e) {
@@ -85,9 +129,10 @@ var app = {
             case 'registered':
                 if (e.regid.length > 0)
                 {
+                	$('#login .button').removeAttr('disabled');
 					// Enviar para o servidor o regID do android para uso posterior
+					$("#login input[name='registro']").value = e.regid;
 					$('<li></li>').html('Registration id = '+e.regid).appendTo('#info-list');
-					$('#registrado-chk').css('display','block');
                 }
             break;
  
@@ -146,3 +191,15 @@ var app = {
 		}
 	}
 };
+
+
+
+function getEx(url, callback) {
+	id = Math.floor(Math.random() * 100000);
+	$('<iframe></iframe>').css('display','none').attr('id','getEx_'+id).appendTo(document.body);
+	$('#getEx_'+id).attr('src', url).ready(function(){
+		data = document.getElementById('getEx_'+id);
+		callback(data.innerHTML);
+		//$('#getEx_'+id).remove();
+	});
+}

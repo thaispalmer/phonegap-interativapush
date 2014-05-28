@@ -75,18 +75,17 @@ var app = {
     },
 		
 	successHandler: function(result) {
-		$('<li></li>').html('Callback Success! Result = '+result).appendTo('#info-list');
+		$('<li></li>').html('Conexão bem sucedida: '+result).appendTo('#info-list');
 	},
 	
 	errorHandler:function(error) {
-		$('<li></li>').html('Erro = ' + error).appendTo('#info-list');
+		$('<li></li>').html('Erro: ' + error).appendTo('#info-list');
 	},
 	
 	enviaRegistro: function(data) {
 		$('#login .button').attr('disabled','disabled');
 		$('#registrando-notify').css('display','block');
-		$.getJSON(app.urlservidor+'index.php?action=assign',{ 'nome': $("#login input[name='usuario']").val , 'registro': $("#login input[name='registro']").value , 'plataforma': 'asdasd' },function(data){
-//		$.get(app.urlservidor+'index.php?action=assign&plataforma=' + 'asdasd' + '&' + $('#login').serialize(),function(result) {
+		$.get(app.urlservidor+'index.php?action=assign&plataforma=' + device.platform + '&' + $('#login').serialize(),function(result) {
 			console.log(result);
 			var data = $.parseJSON(result);
 			if (data.error == 1) {
@@ -95,25 +94,25 @@ var app = {
 				$('#login .button').removeAttr('disabled');
 				$('#registrando-notify').css('display','none');
 			}
-        	else if (data.success) {
-        		if (data.success == 1) {
+			else if (data.success) {
+				if (data.success == 1) {
 					$('<li></li>').html('Registro adicionado!').appendTo('#info-list');
-        		}
-        		else {
-        			$('<li></li>').html('Registro atualizado!').appendTo('#info-list');
-        		}
-        		$('<li></li>').html('Pronto para receber notificações push individualmente.').appendTo('#info-list');
-        		$('#registrando-notify').css('display','none');
-        		$('#registrado-chk').css('display','block');
-        		$('#login').attr('disabled','disabled');
-        	}
-        	else {
-        		alert('Erro desconhecido. Tente novamente.');
-        		$('<li></li>').html('Erro desconhecido').appendTo('#info-list');
-        		$('#login .button').removeAttr('disabled');
-        		$('#registrando-notify').css('display','none');
-        	}
-    	});
+				}
+				else {
+					$('<li></li>').html('Registro atualizado!').appendTo('#info-list');
+				}
+				$('<li></li>').html('Pronto para receber notificações push individualmente.').appendTo('#info-list');
+				$('#registrando-notify').css('display','none');
+				$('#registrado-chk').css('display','block');
+				$('#login').attr('disabled','disabled');
+			}
+			else {
+				alert('Erro desconhecido. Tente novamente.');
+				$('<li></li>').html('Erro desconhecido').appendTo('#info-list');
+				$('#login .button').removeAttr('disabled');
+				$('#registrando-notify').css('display','none');
+			}
+		});
 	},
 
 	tokenHandler: function(result) {

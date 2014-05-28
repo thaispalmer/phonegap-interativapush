@@ -12,19 +12,19 @@ if ($_GET) {
                         if ($row['nome'] == $_GET['nome']) {
                                 $query = "UPDATE push_registros SET plataforma='" . $_GET['plataforma'] . "', registro='" . $_GET['registro'] . "' WHERE id_registro=" . $row['id_registro']; 
                                 $result = $db->query($query); 
-                                echo "{ success : 2 }"; // registro atualizado
+                                echo '{ "success" : 2 }'; // registro atualizado
                         }
                         else {
                                 $query = "INSERT INTO push_registros (nome, registro, plataforma) VALUES ('" . $_GET['nome'] . "','" . $_GET['registro'] . "','" . $_GET['plataforma'] . "')";
                                 $result = $db->query($query);
-                                echo "{ success : 1 }"; // registro adicionado
+                                echo '{ "success" : 1 }'; // registro adicionado
                         }
                 }
                 else {
-                        echo "{ error : 1 }"; // assign incompleto
+                        echo '{ "error" : 1 }'; // assign incompleto
                 }
         }
-        if $($_GET['action'] == 'push') {
+        if ($_GET['action'] == 'push') {
                 foreach($id as $registro) {
                         $query = "SELECT registro,plataforma FROM push_registros WHERE id_registro=" . $registro;
                         $result = $db->query($query);
@@ -58,7 +58,7 @@ else {
         $query = "SELECT * FROM push_registros ORDER BY id_registro ASC";
         $result = $db->query($query);
         while ($row = mysqli_fetch_array($result)) {
-                echo '<tr><td>' . $row['nome'] . '</td><td><span title="' . $row['registro'] . '">' . $row['plataforma'] . '</span></td><td>' . $row['id_registro'] . '</td></tr>'
+                echo '<tr><td>' . $row['nome'] . '</td><td><span title="' . $row['registro'] . '">' . $row['plataforma'] . '</span></td><td>' . $row['id_registro'] . '</td></tr>';
         }
 ?>
 

@@ -20,33 +20,34 @@ var app = {
 
 	urlservidor: 'http://www.st0rage.org/~thoso/interativapush/',
 
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicity call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.pushInit();
-    },
-    
+	// Application Constructor
+	initialize: function() {
+		this.bindEvents();
+	},
+	// Bind Event Listeners
+	//
+	// Bind any events that are required on startup. Common events are:
+	// 'load', 'deviceready', 'offline', and 'online'.
+	bindEvents: function() {
+		document.addEventListener('deviceready', this.onDeviceReady, false);
+	},
+	// deviceready Event Handler
+	//
+	// The scope of 'this' is the event. In order to call the 'receivedEvent'
+	// function, we must explicity call 'app.receivedEvent(...);'
+	onDeviceReady: function() {
+		app.pushInit();
+	},
 	
 	
-    pushInit: function() {
-    	$('#login').submit(function(event) {
-    		app.enviaRegistro();
-    		event.preventDefault();
-    	});
-    	$('#login .button').attr('disabled','disabled');
+	
+	pushInit: function() {
+		$('#login').submit(function(event) {
+			app.enviaRegistro();
+			event.preventDefault();
+		});
+		$('#login .button').attr('disabled','disabled');
+		$('#login .button').removeClass('green');
 
 		$('<li></li>').html('Registrando '+device.platform).appendTo('#info-list');
 		var pushNotification = window.plugins.pushNotification;
@@ -72,7 +73,7 @@ var app = {
 				}
 			);
 		}
-    },
+	},
 		
 	successHandler: function(result) {
 		$('<li></li>').html('Conexão bem sucedida: '+result).appendTo('#info-list');
@@ -84,6 +85,7 @@ var app = {
 	
 	enviaRegistro: function(data) {
 		$('#login .button').attr('disabled','disabled');
+		$('#login .button').removeClass('green');
 		$('#registrando-notify').css('display','block');
 		$.get(app.urlservidor+'index.php?action=assign&plataforma=' + device.platform + '&' + $('#login').serialize(),function(result) {
 			console.log(result);
@@ -92,6 +94,7 @@ var app = {
 				alert('Assign Incompleto, confira as informações e tente novamente.');
 				$('<li></li>').html('Erro: Assign incompleto, informações insuficientes.').appendTo('#info-list');
 				$('#login .button').removeAttr('disabled');
+				$('#login .button').addClass('green');
 				$('#registrando-notify').css('display','none');
 			}
 			else if (data.success) {
@@ -110,6 +113,7 @@ var app = {
 				alert('Erro desconhecido. Tente novamente.');
 				$('<li></li>').html('Erro desconhecido').appendTo('#info-list');
 				$('#login .button').removeAttr('disabled');
+				$('#login .button').addClass('green');
 				$('#registrando-notify').css('display','none');
 			}
 		});
@@ -117,25 +121,27 @@ var app = {
 
 	tokenHandler: function(result) {
 		$('#login .button').removeAttr('disabled');
+		$('#login .button').addClass('green');
 		// enviar para o servidor o token do iOS para uso posterior
 		$("#login input[name='registro']").value = result;
 		$('<li></li>').html('Registration Token = '+result).appendTo('#info-list');
 	},
 	
 	onNotificationGCM: function(e) {
-        switch(e.event)
-        {
-            case 'registered':
-                if (e.regid.length > 0)
-                {
-                	$('#login .button').removeAttr('disabled');
+		switch(e.event)
+		{
+			case 'registered':
+				if (e.regid.length > 0)
+				{
+					$('#login .button').removeAttr('disabled');
+					$('#login .button').addClass('green');
 					// Enviar para o servidor o regID do android para uso posterior
 					$("#login input[name='registro']").value = e.regid;
 					$('<li></li>').html('Registration id = '+e.regid).appendTo('#info-list');
-                }
-            break;
+				}
+			break;
  
-            case 'message':
+			case 'message':
 				if (e.foreground) {
 					// o app estava aberto em primeiro plano
 					$('<li></li>').html('Notificação com o app em primeiro plano').appendTo('#info-list');
@@ -161,17 +167,17 @@ var app = {
 				// this is the actual push notification. its format depends on the data model from the push server
 				alert('Mensagem = '+e.message+' Msgcnt = '+e.msgcnt);
 				$('<li></li>').html('Mensagem = '+e.message+' Msgcnt = '+e.msgcnt).appendTo('#info-list');
-            break;
+			break;
  
-            case 'error':
+			case 'error':
 				$('<li></li>').html('GCM error = '+e.msg).appendTo('#info-list');
-            break;
+			break;
  
-            default:
+			default:
 				$('<li></li>').html('Um evento desconhecido do GCM ocorreu').appendTo('#info-list');
 				break;
-        }
-    },
+		}
+	},
 	
 	onNotificationAPN: function(e) {
 		if (e.alert) {
@@ -190,15 +196,3 @@ var app = {
 		}
 	}
 };
-
-
-
-function getEx(url, callback) {
-	id = Math.floor(Math.random() * 100000);
-	$('<iframe></iframe>').css('display','none').attr('id','getEx_'+id).appendTo(document.body);
-	$('#getEx_'+id).attr('src', url).ready(function(){
-		data = document.getElementById('getEx_'+id);
-		callback(data.innerHTML);
-		//$('#getEx_'+id).remove();
-	});
-}

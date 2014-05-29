@@ -6,4 +6,6 @@ $_config['mysql']['user'] = 'user';
 $_config['mysql']['pass'] = 'pass';
 $_config['mysql']['database'] = 'db';
 
+$_config['gcm']['apikey'] = ''; //chave da aplicação obtida no google developers console
+
 ?>

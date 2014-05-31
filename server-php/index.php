@@ -24,13 +24,13 @@ function envioPushGCM($apiKey,$registrationIds,$messageData) {
 	return $result;
 }
 
-function montaMensagem($tipo,$mensagem,$ticker,$contentTitle,$contentText) {
+function montaMensagem($tipo,$mensagem,$titulo,$contagem,$audio) {
 	if ($tipo == 'gcm') {
 		return array(
 			'message' => $mensagem,
-			'tickerText' => $ticker,
-			'contentTitle' => $contentTitle,
-			'contentText' => $contentText
+			'title' => $titulo,
+			'msgcnt' => $contagem,
+			'soundname' => $audio
 		);
 	}
 }
@@ -63,7 +63,7 @@ if ($_GET) {
 	if (($_GET['action'] == 'push') && ($_POST)) {
 		$android = array();
 		$ios = array();
-		if (isset($_POST['ids']) && ($_POST['mensagem']) && ($_POST['ticker']) && ($_POST['contentTitle']) && ($_POST['contentText'])) {
+		if (isset($_POST['ids']) && ($_POST['mensagem']) && ($_POST['titulo'])) {
 			$ids = '';
 			foreach ($_POST['ids'] as $id) $ids .= ','.$id;
 			echo 'Lista de IDs: ' . substr($ids,1) . '<hr/>';
@@ -87,7 +87,7 @@ if ($_GET) {
 			//Envio de mensagens
 			if (count($android) > 0) {
 				echo 'Enviando para Android...<br/>';
-				$msgandroid = montaMensagem('gcm',$_POST['mensagem'],$_POST['ticker'],$_POST['contentTitle'],$_POST['contentText']);
+				$msgandroid = montaMensagem('gcm',$_POST['mensagem'],$_POST['titulo'],$_POST['contagem'],$_POST['audio']);
 				$resposta = envioPushGCM($_config['gcm']['apikey'],$android,$msgandroid);
 				echo $resposta . '<br/><br/>';
 			}
@@ -125,9 +125,9 @@ else {
 	</table>
 	<hr/>
 	Mensagem: <input type="text" name="mensagem"/><br/>
-	Ticker: <input type="text" name="ticker"/><br/>
-	Content Title: <input type="text" name="contentTitle"/><br/>
-	Content Body: <input type="text" name="contentText"/><br/>
+	Titulo: <input type="text" name="titulo"/><br/>
+	Contagem: <input type="text" name="contagem"/><br/>
+	Arquivo de audio: <input type="text" name="audio"/><br/>
 	<input type="submit" value="Enviar Mensagem"/>
 	</form>
 </body>

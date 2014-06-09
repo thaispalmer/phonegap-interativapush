@@ -8,4 +8,7 @@ $_config['mysql']['database'] = 'db';
 
 $_config['gcm']['apikey'] = ''; //chave da aplicação obtida no google developers console
 
+$_config['apns']['certificado'] = 'certificado.pem';
+$_config['apns']['senha'] = 'passphrase';
+
 ?>

@@ -24,15 +24,40 @@ function envioPushGCM($apiKey,$registrationIds,$messageData) {
 	return $result;
 }
 
-function montaMensagem($tipo,$mensagem,$titulo,$contagem,$audio) {
-	if ($tipo == 'gcm') {
-		return array(
-			'message' => $mensagem,
-			'title' => $titulo,
-			'msgcnt' => $contagem,
-			'soundname' => $audio
-		);
+function envioPushAPNS($certificado,$senha,$deviceToken,$messageData,$sandbox = false) {
+	$ctx = stream_context_create();
+	stream_context_set_option($ctx, 'ssl', 'local_cert', $certificado);
+	stream_context_set_option($ctx, 'ssl', 'passphrase', $senha);
+	$sock = stream_socket_client($sandbox == true ? 'ssl://gateway.sandbox.push.apple.com:2195' : 'ssl://gateway.push.apple.com:2195' , $err, $errstr, 60, STREAM_CLIENT_CONNECT|STREAM_CLIENT_PERSISTENT, $ctx);
+
+	$data = json_encode(array('aps' => $messageData));
+	$pre = chr(0) . pack('n',32);
+	$pos = pack('n', strlen($data)) . $data;
+	$status = array();
+	foreach ($deviceToken as $token) {
+		$msg = $pre . pack('H*',$token) . $pos;
+		$result = fwrite($sock, $msg, strlen($msg));
+		if ($result) $status['succ'][] = $token;
+		else $status['fail'][] = $token;
 	}
+	fclose($sock);
+	return $status;
+}
+
+function montaMensagem($tipo,$mensagem,$titulo,$contagem,$audio) {
+	$payload = array();
+	if ($tipo == 'gcm') {
+		$payload['message'] = $mensagem;
+		$payload['title'] = $titulo;
+		if ($contagem) $payload['msgcnt'] = $contagem;
+		if ($audio) $payload['soundname'] = $audio;
+	}
+	elseif ($tipo == 'apns') {
+		$payload['alert'] = $titulo . "\n" . $mensagem;
+		if ($contagem) $payload['badge'] = $contagem;
+		if ($audio) $payload['sound'] = $audio;
+	}
+	return $payload;
 }
 
 
@@ -93,15 +118,26 @@ if ($_GET) {
 			}
 
 			if (count($ios) > 0) {
-				echo 'Envio para android em desenvolvimento.';
+				echo 'Enviando para iOS...<br/>';
+				$msgios = montaMensagem('apns',$_POST['mensagem'],$_POST['titulo'],$_POST['contagem'],$_POST['audio']);
+				$resposta = envioPushAPNS($_config['apns']['certificado'],$_config['apns']['senha'],$ios,$msgios,true);
+				echo 'Envios bem sucedidos: ' . count($resposta['succ']) . '<br/>';
+				foreach($resposta['succ'] as $token) echo '[' . $token . '] ';
+				echo '<br/>Envios com falha: ' . count($resposta['fail']) . '<br/>';
 			}
 		}
+		else { echo 'Selecione algum dispositivo, preencha todos os campos obrigatórios e tente novamente.'; }
 	}
 }
 else {
 ?>
 
+<!DOCTYPE html>
 <html>
+<head>
+<meta charset="utf-8">
+<title>Interativa Push</title>
+</head>
 <body>
 	<h1>Interativa Push</h1>
 	<hr/>
@@ -113,7 +149,6 @@ else {
 			<td><b>Nome</b></td>
 			<td><b>Plataforma</b></td>
 		</tr>
-
 <?php
 	// listar assigns
 	$query = "SELECT * FROM push_registros ORDER BY id_registro ASC";
@@ -126,8 +161,14 @@ else {
 	<hr/>
 	Mensagem: <input type="text" name="mensagem"/><br/>
 	Titulo: <input type="text" name="titulo"/><br/>
-	Contagem: <input type="text" name="contagem"/><br/>
-	Arquivo de audio: <input type="text" name="audio"/><br/>
+	Contagem: <input type="text" name="contagem"/> <small>(opcional)</small><br/>
+	Som de notificação personalizado:
+	<select name="audio">
+		<option value="">Padrão do dispositivo</option>
+		<option value="plastik.wav">Plastik</option>
+		<option value="capisci.wav">Capisci</option>
+		<option value="scifiish.wav">Sci-fi-ish</option>
+	</select> <small>(opcional)</small><br/>
 	<input type="submit" value="Enviar Mensagem"/>
 	</form>
 </body>

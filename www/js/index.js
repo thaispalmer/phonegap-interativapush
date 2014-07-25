@@ -18,7 +18,7 @@
  */
 var app = {
 
-	urlservidor: 'http://www.st0rage.org/~thoso/interativapush/',
+	urlservidor: 'https://st0rage.org/~thoso/interativapush/',
 
 	// Application Constructor
 	initialize: function() {
